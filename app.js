@@ -39,15 +39,14 @@ function seed(){const B=[['Introduction to Algorithms','Cormen',2009,2],['Data S
  return{off:0,nb:B.length+1,nm:4,books,members,loans:[],waits:{},log:[]}}
 function expandSeedData(){const titles=['Foundations of Computer Science','Practical Web Development','Modern Database Design','Principles of Software Engineering','Algorithms in Everyday Systems','Introduction to Artificial Intelligence','Data Analysis with Python','Computer Networks and Security','Operating Systems in Practice','Fundamentals of Cloud Computing','Human Computer Interaction','Machine Learning Essentials','Discrete Mathematics for Computing','Clean Code Practices','Digital Logic and Computer Architecture','Information Systems Management','Applied Statistics for Research','Object Oriented Programming','Theory of Computation','Modern Cryptography','Mobile Application Design','Natural Language Processing','Computer Graphics Techniques','Internet of Things','Software Testing Strategies','Distributed Systems','Ethical Hacking Fundamentals','Data Visualization Methods','Project Management for Technology','Advanced JavaScript Programming'];
  const authors=['Anita Deshmukh','Rohan Mehta','Priya Nair','Vikram Joshi','Neha Kapoor','Arjun Malhotra','Kavita Rao','Sanjay Iyer','Meera Shah','Rahul Verma'];
- const firstNames=['Aditi','Ishaan','Manya','Dev','Ananya','Rohan','Sneha','Vihaan','Diya','Arnav','Mehak','Yash','Nisha','Aarush','Simran','Kunal','Tanya','Aditya','Pooja','Manav'];
- const lastNames=['Patel','Gupta','Mishra','Chauhan','Bansal','Saxena','Agarwal','Sethi','Kapoor','Malhotra','Desai','Chopra','Reddy','Iyer','Nair','Joshi','Shah','Mehta','Verma','Rao','Khanna','Singh','Sharma','Das','Khan'];
- const hasBulkBooks=S.bulkSeeded||S.books.some(b=>b.title==='Library Collection 001')||S.books.some(b=>b.title===titles[0]+' - Volume 1');const hasBulkMembers=S.bulkSeeded||S.members.some(m=>m.name==='Library Member 001');
+ const firstNames=['Aditya','Ananya','Aryan','Diya','Ishaan','Kavya','Manish','Pooja','Rohan','Sneha','Tanvi','Varun','Yash','Shreya','Ayush','Mehul','Simran','Harsh','Nandini','Kunal','Pranav','Divya','Ritika','Akash','Aniket','Sakshi','Gaurav','Tanya','Deepak','Isha'];
+ const lastNames=['Sharma','Verma','Singh','Patel','Gupta','Kumar','Mishra','Joshi','Mehta','Bhatia','Reddy','Choudhury','Nair','Kapoor','Malhotra','Saxena','Agarwal','Rao','Das','Pandey','Yadav','Tripathi','Chauhan','Thakur','Bose'];
+ const studentName=i=>firstNames[i%firstNames.length]+' '+lastNames[(i+Math.floor(i/firstNames.length))%lastNames.length];
+ const hasBulkBooks=S.books.some(b=>b.title==='Library Collection 001');const hasBulkMembers=S.members.some(m=>m.name==='Library Member 001'||m.name.startsWith('Library Member '));
  if(!hasBulkBooks){for(let i=0;i<600;i++){const id=pad('B',S.nb++),base=titles[i%titles.length],volume=Math.floor(i/titles.length)+1,copies=i%4+1;S.books.push({id,title:base+' - Volume '+volume,author:authors[i%authors.length],year:2000+i%26,copies,avail:copies})}}
  else S.books.forEach(b=>{if(b.title.startsWith('Library Collection ')){const i=parseInt(b.id.slice(1),10)-7,base=titles[i%titles.length];b.title=base+' - Volume '+(Math.floor(i/titles.length)+1);b.author=authors[i%authors.length]}})
- if(S.bulkSeeded){const seen={};S.books=S.books.filter(b=>{if(!b.title.includes(' - Volume ')||!authors.includes(b.author))return true;const key=b.title+'|'+b.author+'|'+b.year+'|'+b.copies;if(seen[key])return false;seen[key]=true;return true})}
- const memberName=i=>firstNames[i%firstNames.length]+' '+lastNames[Math.floor(i/firstNames.length)%lastNames.length];
- if(!hasBulkMembers){for(let i=0;i<500;i++){const id=pad('M',S.nm++);S.members.push({id,name:memberName(i)})}}
- else S.members.forEach(m=>{if(m.name.startsWith('Library Member ')){const i=parseInt(m.id.slice(1),10)-4;m.name=memberName(i)}})
+ if(!hasBulkMembers){for(let i=0;i<500;i++){const id=pad('M',S.nm++);S.members.push({id,name:studentName(i)})}}
+ else S.members.forEach(m=>{if(m.name.startsWith('Library Member ')){const idx=parseInt(m.id.slice(1),10)-4;m.name=studentName(Math.max(0,idx))}})
  S.bulkSeeded=true
 }
 function build(){H=new HashTable();T=new BST();Q={};L={};

@@ -15,7 +15,7 @@
 <div class="row"><input id="cb" list="dlBooks" placeholder="Write book name or ID (e.g. Let Us C)" autocomplete="off"><datalist id="dlBooks"></datalist><input id="cm" list="dlMembers" placeholder="Write student name or ID (e.g. Aarav Sharma)" autocomplete="off"><datalist id="dlMembers"></datalist><button id="issue">Issue book</button><button id="ret">Return book</button></div>
 <p class="note">Loan period 14 days, max 3 books per member, fine Rs 2 per late day. If no copy is free, the member joins the waitlist (queue) and gets the book automatically when it is returned.</p>
 <h3>Active loans</h3><div id="loans"></div><h3>Waitlists</h3><div id="waits"></div><h3>Recent activity</h3><ul id="log"></ul></section>
-<section id="mem" hidden><h2>Members</h2><form id="fMem" class="row"><input id="mn" placeholder="Member name" required><button>Add member</button></form><div id="mList"></div></section>
+<section id="mem" hidden><h2>Members &amp; Students</h2><form id="fMem" class="row"><input id="mn" placeholder="Student / Member name" required><button>Add student</button></form><div id="mList"></div></section>
 <section id="over" hidden><h2>Overdue books</h2><p class="note">Loans sit in a min-heap ordered by due date; we pop until the earliest due date is in the future.</p><div id="oList"></div></section>
 <section id="ds" hidden><h2>Live data structures</h2><div id="dsView"></div>
 <h3>Complexity</h3><table><thead><tr><th>Operation</th><th>Structure</th><th>Time</th></tr></thead><tbody>
@@ -26,4 +26,4 @@
 <tr><td>Member's issued books</td><td>Singly linked list</td><td>O(k), k &le; 3</td></tr>
 <tr><td>Next overdue loan</td><td>Min-heap</td><td>O(log n)</td></tr>
 <tr><td>Undo</td><td>Stack (LIFO)</td><td>O(1) pop</td></tr></tbody></table></section>
-</main><script src="app.js?v=3"></script></body></html>
+</main><script src="app.js?v=4"></script></body></html>
