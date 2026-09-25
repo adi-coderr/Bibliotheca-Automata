@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Library Management System</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div><h1>Smart Library</h1><p>Data Structures project: hash table, BST, queue, stack, linked list, heap</p></div>
+<div class="hd"><span>Library date: <b id="date"></b></span><button id="p7">+7 days</button><button id="p0">Reset date</button><button id="undoBtn">Undo</button></div></header>
+<nav><button data-t="books" class="on">Books</button><button data-t="circ">Issue &amp; Return</button><button data-t="mem">Members</button><button data-t="over">Overdue</button><button data-t="ds">Data structures</button></nav>
+<div id="stats"></div><div id="toast" role="status" aria-live="polite"></div>
+<main>
+<section id="books"><h2>Books</h2>
+<form id="fBook" class="row"><input id="bt" placeholder="Title" required><input id="ba" placeholder="Author" required><input id="by" type="number" placeholder="Year" required><input id="bc" type="number" min="1" max="99" value="1" title="Copies"><button>Add book</button></form>
+<div class="row"><input id="q" placeholder="Search title prefix, author or ID (B001)"><select id="sort"><option value="title">Sort: title (BST order)</option><option value="author">Sort: author (merge sort)</option><option value="year">Sort: year (merge sort)</option></select></div>
+<table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Year</th><th>Available</th><th>Waiting</th><th></th></tr></thead><tbody id="bBody"></tbody></table></section>
+<section id="circ" hidden><h2>Issue &amp; Return</h2>
+<div class="row"><input id="cb" list="dlBooks" placeholder="Write book name or ID (e.g. Let Us C)" autocomplete="off"><datalist id="dlBooks"></datalist><input id="cm" list="dlMembers" placeholder="Write student name or ID (e.g. Aarav Sharma)" autocomplete="off"><datalist id="dlMembers"></datalist><button id="issue">Issue book</button><button id="ret">Return book</button></div>
+<p class="note">Loan period 14 days, max 3 books per member, fine Rs 2 per late day. If no copy is free, the member joins the waitlist (queue) and gets the book automatically when it is returned.</p>
+<h3>Active loans</h3><div id="loans"></div><h3>Waitlists</h3><div id="waits"></div><h3>Recent activity</h3><ul id="log"></ul></section>
+<section id="mem" hidden><h2>Members</h2><form id="fMem" class="row"><input id="mn" placeholder="Member name" required><button>Add member</button></form><div id="mList"></div></section>
+<section id="over" hidden><h2>Overdue books</h2><p class="note">Loans sit in a min-heap ordered by due date; we pop until the earliest due date is in the future.</p><div id="oList"></div></section>
+<section id="ds" hidden><h2>Live data structures</h2><div id="dsView"></div>
+<h3>Complexity</h3><table><thead><tr><th>Operation</th><th>Structure</th><th>Time</th></tr></thead><tbody>
+<tr><td>Find book by ID</td><td>Hash table (chaining)</td><td>O(1) average</td></tr>
+<tr><td>Title search / sorted list</td><td>Binary search tree</td><td>O(h) / O(n) in-order</td></tr>
+<tr><td>Sort by author or year</td><td>Merge sort</td><td>O(n log n)</td></tr>
+<tr><td>Waitlist join / serve</td><td>Queue (FIFO)</td><td>O(1)</td></tr>
+<tr><td>Member's issued books</td><td>Singly linked list</td><td>O(k), k &le; 3</td></tr>
+<tr><td>Next overdue loan</td><td>Min-heap</td><td>O(log n)</td></tr>
+<tr><td>Undo</td><td>Stack (LIFO)</td><td>O(1) pop</td></tr></tbody></table></section>
+</main><script src="app.js?v=3"></script></body></html>
