@@ -111,6 +111,14 @@ The system operates in **dual mode**:
    - *Issue*: The Live View previously called JavaScript's built-in array `.sort()` to show earliest due loans instead of demonstrating the `MinHeap`.
    - *Fix*: Replaced with actual `MinHeap` extractions, visibly demonstrating heap property for viva evaluations.
 
+7. **Database Foreign Key Deletion Order Bug**:
+   - *Issue*: Calling `saveState()` when active loans or waitlists existed caused `FOREIGN KEY constraint failed` because parent tables (`books`, `members`) were deleted before child tables (`loans`, `waitlists`).
+   - *Fix*: Re-ordered deletions so child tables are cleared first and inserted last, ensuring strict relational integrity.
+
+8. **Alphanumeric ID Sorting Beyond B999**:
+   - *Issue*: Standard alphabetical `ORDER BY id` sorted `B1000` before `B999`.
+   - *Fix*: Used numeric substring casting `ORDER BY CAST(SUBSTR(id, 2) AS INTEGER) ASC` so IDs sort in true numerical sequence (`B001` through `B1000+`).
+
 ---
 
 ## 📋 Viva / Interview Reference

@@ -126,6 +126,44 @@ async function runTests() {
     assert.ok(indexHtml.includes('Smart Library'), 'Should serve index.html');
     console.log('✓ Static file serving passed');
 
+    // 12. Delete book endpoint
+    const rDel = await fetch(`${baseUrl}/api/books/B007`, { method: 'DELETE' });
+    const dDel = await rDel.json();
+    assert.strictEqual(rDel.status, 200);
+    assert.strictEqual(dDel.success, true);
+    console.log('✓ DELETE /api/books/:id passed');
+
+    // 13. Export & Import endpoints
+    const rExp = await fetch(`${baseUrl}/api/export`);
+    assert.strictEqual(rExp.status, 200);
+    const dExp = await rExp.json();
+    assert.ok(Array.isArray(dExp.books), 'Export should contain books array');
+    console.log('✓ GET /api/export passed');
+
+    const rImp = await fetch(`${baseUrl}/api/import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dExp)
+    });
+    const dImp = await rImp.json();
+    assert.strictEqual(rImp.status, 200);
+    assert.strictEqual(dImp.success, true);
+    console.log('✓ POST /api/import passed');
+
+    // 14. Undo push & pop endpoints
+    const rPush = await fetch(`${baseUrl}/api/undo/push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: { snapshot: 42 } })
+    });
+    assert.strictEqual(rPush.status, 200);
+
+    const rPop = await fetch(`${baseUrl}/api/undo/pop`, { method: 'POST' });
+    const dPop = await rPop.json();
+    assert.strictEqual(rPop.status, 200);
+    assert.strictEqual(dPop.snapshot.snapshot, 42);
+    console.log('✓ POST /api/undo/push and /api/undo/pop passed');
+
     console.log('\nALL API INTEGRATION TESTS PASSED! ✅');
   } finally {
     server.close();

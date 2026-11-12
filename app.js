@@ -329,6 +329,14 @@ async function initBackendSync() {
     if (res.ok) {
       const serverState = await res.json();
       if (serverState && Array.isArray(serverState.books) && serverState.books.length) {
+        // If server only has fresh initial seed (<= 6 books) but local has expanded dataset, sync to server
+        if (serverState.books.length <= 6 && S && Array.isArray(S.books) && S.books.length > 6) {
+          backendOnline = true;
+          updateBackendBadge('ok', '🟢 Server Connected', 'Connected to SQLite database');
+          syncToBackend();
+          return;
+        }
+
         S = serverState;
         backendOnline = true;
         updateBackendBadge('ok', '🟢 Server Connected', 'Loaded from SQLite database');
@@ -339,7 +347,7 @@ async function initBackendSync() {
       }
     }
     // If backend state is empty but online, push local state to backend
-    if (res.ok) {
+    if (res && res.ok) {
       backendOnline = true;
       updateBackendBadge('ok', '🟢 Server Connected', 'Connected to SQLite database');
       syncToBackend();
@@ -642,12 +650,12 @@ function render() {
 
   const dlB = $('#dlBooks'), dlM = $('#dlMembers');
   if (dlB) {
-    dlB.innerHTML = T.inorder().slice(0, 100).map(b =>
+    dlB.innerHTML = T.inorder().map(b =>
       '<option value="' + esc(b.title) + '" label="' + b.id + ' (' + b.avail + ' free)">' + b.id + '</option>'
     ).join('');
   }
   if (dlM) {
-    dlM.innerHTML = S.members.slice(0, 100).map(m =>
+    dlM.innerHTML = S.members.map(m =>
       '<option value="' + esc(m.name) + '" label="' + m.id + '">' + m.id + '</option>'
     ).join('');
   }

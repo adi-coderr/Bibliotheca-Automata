@@ -89,7 +89,32 @@ try {
   assert.strictEqual(JSON.parse(popped).test, 'undo1');
   console.log('✓ Undo history push & pop verified');
 
-  // 12. Reset all
+  // 12. SaveState with active loans and waitlists (foreign key check)
+  db.issueBook('B006', 'M002'); // B006 has 1 copy
+  db.issueBook('B006', 'M003'); // waitlisted!
+  const stateWithLoans = db.getState();
+  assert.ok(stateWithLoans.loans.length >= 2, 'Should have active loans');
+  assert.strictEqual(stateWithLoans.waits['B006'].length, 1);
+  // Now call saveState to verify child-first deletion works without foreign key violation!
+  assert.doesNotThrow(() => db.saveState(stateWithLoans));
+  const reloadedState = db.getState();
+  assert.strictEqual(reloadedState.loans.length, stateWithLoans.loans.length);
+  assert.strictEqual(reloadedState.waits['B006'].length, 1);
+  console.log('✓ saveState with active loans and waitlists verified');
+
+  // 13. Numeric ID ordering beyond B999
+  db.setMeta('nb', '999');
+  db.addBook({ title: 'Book 999', author: 'Author', year: 2020, copies: 1 });
+  db.addBook({ title: 'Book 1000', author: 'Author', year: 2020, copies: 1 });
+  const bList = db.getState().books;
+  const ids = bList.map(b => b.id);
+  const idx999 = ids.indexOf('B999');
+  const idx1000 = ids.indexOf('B1000');
+  assert.ok(idx999 !== -1 && idx1000 !== -1, 'Both books should exist');
+  assert.ok(idx999 < idx1000, 'B999 must come before B1000 in numeric order');
+  console.log('✓ Numeric ID ordering (B999 < B1000) verified');
+
+  // 14. Reset all
   db.resetAll();
   const stateReset = db.getState();
   assert.strictEqual(stateReset.books.length, 6);

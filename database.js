@@ -139,8 +139,8 @@ class LibraryDatabase {
     const nm = parseInt(this.getMeta('nm', '4'), 10) || 4;
     const bulkSeeded = this.getMeta('bulkSeeded', 'false') === 'true';
 
-    const books = this.db.prepare('SELECT id, title, author, year, copies, avail FROM books ORDER BY id').all();
-    const members = this.db.prepare('SELECT id, name FROM members ORDER BY id').all();
+    const books = this.db.prepare('SELECT id, title, author, year, copies, avail FROM books ORDER BY CAST(SUBSTR(id, 2) AS INTEGER) ASC').all();
+    const members = this.db.prepare('SELECT id, name FROM members ORDER BY CAST(SUBSTR(id, 2) AS INTEGER) ASC').all();
     const loanRows = this.db.prepare('SELECT book_id as b, member_id as m, out_day as out, due_day as due FROM loans').all();
 
     const waitRows = this.db.prepare('SELECT book_id, member_id FROM waitlists ORDER BY book_id, pos ASC').all();
@@ -178,8 +178,13 @@ class LibraryDatabase {
       if (state.nm !== undefined) this.setMeta('nm', String(state.nm));
       if (state.bulkSeeded !== undefined) this.setMeta('bulkSeeded', state.bulkSeeded ? 'true' : 'false');
 
+      // Delete child tables first to respect foreign keys
+      this.db.exec('DELETE FROM waitlists');
+      this.db.exec('DELETE FROM loans');
+      this.db.exec('DELETE FROM books');
+      this.db.exec('DELETE FROM members');
+
       if (Array.isArray(state.books)) {
-        this.db.exec('DELETE FROM books');
         const insBook = this.db.prepare(
           'INSERT INTO books (id, title, author, year, copies, avail) VALUES (?, ?, ?, ?, ?, ?)'
         );
@@ -189,7 +194,6 @@ class LibraryDatabase {
       }
 
       if (Array.isArray(state.members)) {
-        this.db.exec('DELETE FROM members');
         const insMember = this.db.prepare('INSERT INTO members (id, name) VALUES (?, ?)');
         for (const m of state.members) {
           insMember.run(m.id, m.name);
@@ -197,7 +201,6 @@ class LibraryDatabase {
       }
 
       if (Array.isArray(state.loans)) {
-        this.db.exec('DELETE FROM loans');
         const insLoan = this.db.prepare(
           'INSERT INTO loans (book_id, member_id, out_day, due_day) VALUES (?, ?, ?, ?)'
         );
@@ -207,7 +210,6 @@ class LibraryDatabase {
       }
 
       if (state.waits && typeof state.waits === 'object') {
-        this.db.exec('DELETE FROM waitlists');
         const insWait = this.db.prepare(
           'INSERT INTO waitlists (book_id, member_id, pos) VALUES (?, ?, ?)'
         );
@@ -275,8 +277,8 @@ class LibraryDatabase {
 
     this.db.exec('BEGIN TRANSACTION');
     try {
-      this.db.prepare('DELETE FROM books WHERE id = ?').run(id);
       this.db.prepare('DELETE FROM waitlists WHERE book_id = ?').run(id);
+      this.db.prepare('DELETE FROM books WHERE id = ?').run(id);
       this.addLog(`Deleted ${book.title}`);
       this.db.exec('COMMIT');
       return { success: true, id, title: book.title };
